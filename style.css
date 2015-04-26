@@ -1,0 +1,96 @@
+body {
+
+}
+
+div {
+	box-sizing: border-box;
+	-moz-box-sizing: border-box;
+}
+
+#container {
+	margin-left: auto;
+	margin-right: auto;
+	width: 300px;
+
+
+}
+
+.button {
+	position: relative;
+	width: 175px;
+	margin: 5px auto;
+	text-align: center;
+	color: #000;
+	background-color: #D70;
+	border: 2px;
+	border-color: #000;
+	border-style: solid;
+	border-radius: 6px;
+	cursor: pointer;
+	box-shadow: 0px 1px 3px;
+
+
+/*Non-Selectable Text*/
+	-webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+.pressed {
+	background-color: #B85800;
+	/*box-shadow: 0px 0px 3px;*/
+}
+
+.disabled {
+	color: #777;
+	background-color: #AAA;
+	border-color: #666;
+}
+
+.value {
+	clear: right;
+}
+
+#start-race {
+	width: 250px;
+	margin-left: auto;
+	margin-right: auto;
+	border-radius: 10px;
+	font-size: 2.5em;
+	font-family: Impact, sans-serif;
+}
+
+#race-result {
+	width: 200px;
+	height: 20px;
+	text-align: center;
+	margin-left: auto;
+	margin-right: auto;
+	background-color: #EEE;
+	border-color: #FFF;
+	border: none;
+	border-radius: 2px;
+}
+
+#progress {
+
+	border: 0px;
+	border-color: #080;
+	border-radius: 2px;
+	height: 100%;
+	width: 0%;
+
+	background: #bfd255; /* Old browsers */
+background: -moz-linear-gradient(top,  #bfd255 0%, #8eb92a 50%, #72aa00 51%, #9ecb2d 100%); /* FF3.6+ */
+background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#bfd255), color-stop(50%,#8eb92a), color-stop(51%,#72aa00), color-stop(100%,#9ecb2d)); /* Chrome,Safari4+ */
+background: -webkit-linear-gradient(top,  #bfd255 0%,#8eb92a 50%,#72aa00 51%,#9ecb2d 100%); /* Chrome10+,Safari5.1+ */
+background: -o-linear-gradient(top,  #bfd255 0%,#8eb92a 50%,#72aa00 51%,#9ecb2d 100%); /* Opera 11.10+ */
+background: -ms-linear-gradient(top,  #bfd255 0%,#8eb92a 50%,#72aa00 51%,#9ecb2d 100%); /* IE10+ */
+background: linear-gradient(to bottom,  #bfd255 0%,#8eb92a 50%,#72aa00 51%,#9ecb2d 100%); /* W3C */
+filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#bfd255', endColorstr='#9ecb2d',GradientType=0 ); /* IE6-9 */
+
+
+}
