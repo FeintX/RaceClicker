@@ -1,9 +1,22 @@
 // JQuery 
 $(document).ready(function(){
 
+/*  Below is for when I corrupt the local storage.  I should write some kind
+    of test to check if local storage is corrupted. */ 
+//localStorage.clear();
+
+/*  I can't remember why I had to do this, but I couldn't get the result box
+    to be invisible when the game loads otherwise. */
 $("#result-box").fadeOut(0);
 
-// Declaring variables for car upgrade names, costs, and values
+
+var savedVariables = ["driverLevel", "driverUpgradeCost", "carLevel",
+    "raceLevel", "raceUpgradeCost", "racePrize", "engineUpgradeCurrent",
+    "suspUpgradeCurrent", "transUpgradeCurrent", "tireUpgradeCurrent",
+    "cashFlow", "workClicks", "workValue"];
+
+/*  Declaring variables for car upgrade names, costs, and values.  I could
+    probably do these as objects and it would look more elegant. */
 var engineUpgrades = ["Cold Air Intake", "Performance Exhaust System",
     "ECU Tune", "Stage 2 Camshaft", "Race Pistons and Crankshaft",
     "Full Race Exhaust", "Racing Camshaft"];
@@ -26,13 +39,15 @@ var tireUpgrades = ["Performance All Season Tires",
 var tireUpgradeCost = [1000, 2000, 3000, 5000, 10000];
 var tireUpgradeValue = [2, 2, 3, 3, 4];
 
+/*  Check if there is saved game data and loads it if it exists.
+    Otherwise sets game to starting state. */
 if (localStorage.getItem("cashFlow") != null) {
     loadGame();
 } else {
     resetGame();
 }
 
-// Function for resetting game variables
+/*  Set game to starting state */
 function resetGame() {
     localStorage.clear();
     driverLevel = 50;
@@ -52,53 +67,30 @@ function resetGame() {
     updateStats();
 }
 
-// Saving game data from local storage
 function saveGame() {
-    localStorage.setItem("driverLevel", JSON.stringify(driverLevel));
-    localStorage.setItem("driverUpgradeCost", JSON.stringify(driverUpgradeCost));
-    localStorage.setItem("carLevel", JSON.stringify(carLevel));
-    localStorage.setItem("raceLevel", JSON.stringify(raceLevel));
-    localStorage.setItem("raceUpgradeCost", JSON.stringify(raceUpgradeCost));
-    localStorage.setItem("racePrize", JSON.stringify(racePrize));
-    localStorage.setItem("engineUpgradeCurrent", JSON.stringify(engineUpgradeCurrent));
-    localStorage.setItem("suspUpgradeCurrent", JSON.stringify(suspUpgradeCurrent));
-    localStorage.setItem("transUpgradeCurrent", JSON.stringify(transUpgradeCurrent));
-    localStorage.setItem("tireUpgradeCurrent", JSON.stringify(tireUpgradeCurrent));
-    localStorage.setItem("cashFlow", JSON.stringify(cashFlow));
-    localStorage.setItem("workClicks", JSON.stringify(workClicks));
-    localStorage.setItem("workValue", JSON.stringify(workValue));
-} 
+    var i;
+    for (i in savedVariables) {
+        storeVariable(savedVariables[i]);
+    }
+}
 
-// Loading game data from local storage
 function loadGame() {
-    var tempDriverLevel = localStorage.getItem("driverLevel");
-    driverLevel = JSON.parse(tempDriverLevel);
-    var tempDriverUpgradeCost = localStorage.getItem("driverUpgradeCost");
-    driverUpgradeCost = JSON.parse(tempDriverUpgradeCost);
-    var tempCarLevel = localStorage.getItem("carLevel");
-    carLevel = JSON.parse(tempCarLevel);
-    var tempRaceLevel = localStorage.getItem("raceLevel");
-    raceLevel = JSON.parse(tempRaceLevel);
-    var tempRaceUpgradeCost = localStorage.getItem("raceUpgradeCost");
-    raceUpgradeCost = JSON.parse(tempRaceUpgradeCost);
-    var tempRacePrize = localStorage.getItem("racePrize");
-    racePrize = JSON.parse(tempRacePrize);
-    var tempEngineUpgradeCurrent = localStorage.getItem("engineUpgradeCurrent");
-    engineUpgradeCurrent = JSON.parse(tempEngineUpgradeCurrent);
-    var tempSuspUpgradeCurrent = localStorage.getItem("suspUpgradeCurrent");
-    suspUpgradeCurrent = JSON.parse(tempSuspUpgradeCurrent);
-    var tempTransUpgradeCurrent = localStorage.getItem("transUpgradeCurrent");
-    transUpgradeCurrent = JSON.parse(tempTransUpgradeCurrent);
-    var tempTireUpgradeCurrent = localStorage.getItem("tireUpgradeCurrent");
-    tireUpgradeCurrent = JSON.parse(tempTireUpgradeCurrent);
-    var tempCashFlow = localStorage.getItem("cashFlow");
-    cashFlow = JSON.parse(tempCashFlow);
-    var tempWorkClicks = localStorage.getItem("workClicks");
-    workClicks = JSON.parse(tempWorkClicks);
-    var tempWorkValue = localStorage.getItem("workValue");
-    workValue = JSON.parse(tempWorkValue);
+    var i;
+    for (i in savedVariables) {
+        window[savedVariables[i]] = loadVariable(savedVariables[i]);
+    }
     disableStart = false;
     updateStats();
+}
+
+function storeVariable(variableName) {
+    var thisVar = window[variableName];
+    localStorage.setItem(variableName, JSON.stringify(thisVar));
+}
+
+function loadVariable(variableName) {
+    var temp = localStorage.getItem(variableName);
+    return JSON.parse(temp);
 }
 
 $("#start-race").click(function() {
