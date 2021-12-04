@@ -51,6 +51,9 @@ var tires = {
     value: [2, 2, 3, 3, 4]
 }
 
+var tickSpeed = 25;
+
+
 /*  Check if there is saved game data and loads it if it exists.
     Otherwise sets game to starting state. */
 if (localStorage.getItem("cashFlow") != null) {
@@ -66,7 +69,7 @@ function resetGame() {
     carLevel = 25;
     raceLevel = 1;
     raceUpgradeCost = 100;
-    racePrize = 50;
+    racePrize = 100;
     engineCurrent = 0;
     suspensionCurrent = 0;
     transmissionCurrent = 0;
@@ -79,13 +82,13 @@ function resetGame() {
 }
 
 function saveGame() {
-    for (var i in savedVariables) {
+    for (let i in savedVariables) {
         storeVariable(savedVariables[i]);
     }
 }
 
 function loadGame() {
-    for (var i in savedVariables) {
+    for (let i in savedVariables) {
         window[savedVariables[i]] = loadVariable(savedVariables[i]);
     }
     disableStart = false;
@@ -93,58 +96,85 @@ function loadGame() {
 }
 
 function storeVariable(variableName) {
-    var thisVar = window[variableName];
+    let thisVar = window[variableName];
     localStorage.setItem(variableName, JSON.stringify(thisVar));
 }
 
 function loadVariable(variableName) {
-    var temp = localStorage.getItem(variableName);
+    let temp = localStorage.getItem(variableName);
     return JSON.parse(temp);
 }
 
 function runRace() {
-    var oppRace = 21000 - ((raceLevel - 1) * 1750) -
-        Math.floor((Math.random() * 2501));
-    var playRace = Math.floor(250000 / (carLevel * (driverLevel / 100)));
-    var raceAnim = Math.floor(Math.random() * 4);
-    var tempPrize = racePrize;
-    switch (raceAnim) {
-        case 0:
-            $("#progress").animate({width: '100%'}, playRace, 'easeInQuad');
-            $("#progressopp").animate({width: '100%'}, oppRace, 'easeInQuad');
-            break;
-        case 1:
-            $("#progress").animate({width: '100%'}, playRace, 'easeInCubic');
-            $("#progressopp").animate({width: '100%'}, oppRace, 'easeInQuad');
-            break;
-        case 2:
-            $("#progress").animate({width: '100%'}, playRace, 'easeInQuad');
-            $("#progressopp").animate({width: '100%'}, oppRace, 'easeInCubic');
-            break;
-        case 3:
-            $("#progress").animate({width: '100%'}, playRace, 'easeInCubic');
-            $("#progressopp").animate({width: '100%'}, oppRace, 'easeInCubic');
-            break;
-    }
-    if (playRace <= oppRace) {
+    let tempPrize = racePrize;
+    let playSpeed = 0;
+    let playProgress = 0;
+
+    let oppSpeed = 0;
+    let oppProgress = 0;
+    let oppSkill = (raceLevel * 5) + 20;
+    let oppCar = (raceLevel * 7) + 20;
+
+    animateRace();
+
+    function animateRace() {
         setTimeout(function() {
-            $("#result-box").text("+$" + (tempPrize)).
-                fadeIn(100).delay(300).fadeOut(800);
-            cashFlow += racePrize;
-            updateStats();
-            $("#progress").animate({width: '0%'}, 0);
-            $("#progressopp").animate({width: '0%'}, 0);
-            toggleStartButton();
-        }, oppRace);
-    } else {
-        setTimeout(function() {
-            $("#result-box").text("You Lose!").fadeIn(100).
-                delay(300).fadeOut(800);
-            $("#progress").animate({width: '0%'}, 0);
-            $("#progressopp").animate({width: '0%'}, 0);
-            toggleStartButton();
-        }, playRace);
+            calcPlayerSpeed(playSpeed);
+            calcOppSpeed(oppSpeed);
+            playProgress += playSpeed;
+            oppProgress += oppSpeed;
+            let playProgAnim = Math.round(playProgress) + "px";
+            let oppProgAnim = Math.round(oppProgress) + "px";
+            $("#progress").animate({width: playProgAnim}, 0);
+            $("#progressopp").animate({width: oppProgAnim}, 0);
+            if (playProgress < 608 && oppProgress < 608) {
+                animateRace();
+            } else {
+                if (playProgress >= oppProgress) {
+                    $("#result-box").text("+$" + (tempPrize)).
+                    fadeIn(100).delay(300).fadeOut(800);
+                    cashFlow += racePrize;
+                    updateStats();
+                    $("#progress").animate({width: '0%'}, 0);
+                    $("#progressopp").animate({width: '0%'}, 0);
+                    toggleStartButton();
+                } else {
+                     $("#result-box").text("You Lose!").fadeIn(100).
+                    delay(300).fadeOut(800);
+                    $("#progress").animate({width: '0%'}, 0);
+                    $("#progressopp").animate({width: '0%'}, 0);
+                    toggleStartButton();
+                }
+            }
+        }, tickSpeed);
+
+    };
+
+    function calcPlayerSpeed(currentSpeed) {
+        if (currentSpeed == 0) {
+            let reactionTime = Math.floor(Math.random() * 100);
+            if (driverLevel > reactionTime) {
+                playSpeed = (driverLevel / reactionTime) * carLevel / (tickSpeed * 200);
+            }
+        } else if (currentSpeed < 1) {
+            playSpeed += carLevel / (tickSpeed * (200 - driverLevel));
+        } else {
+            playSpeed += carLevel / (tickSpeed * 100);
+        }
     }
+
+    function calcOppSpeed(currentSpeed) {
+        if (currentSpeed == 0) {
+            let reactionTime = Math.floor(Math.random() * 100);
+            if (oppSkill > reactionTime) {
+                oppSpeed = (oppSkill / reactionTime) * oppCar / (tickSpeed * 200);
+            }
+        } else if (currentSpeed < 1) {
+            oppSpeed += oppCar / (tickSpeed * (200 - oppSkill));
+        } else {
+            oppSpeed += oppCar / (tickSpeed * 100);
+        }
+    }   
 }
 
 function updateStats() {
@@ -175,8 +205,8 @@ function updateStats() {
 }
 
 function checkComponent(component) {
-    var current = window[component.type + "Current"];
-    var selector = "#car-" + component.type;
+    let current = window[component.type + "Current"];
+    let selector = "#car-" + component.type;
     if (current == component.name.length) {
         $(selector).addClass("disabled").
             text("Max Upgrades");
@@ -215,14 +245,13 @@ function upgradeRace() {
     if (raceUpgradeCost <= cashFlow) {
         cashFlow = cashFlow - raceUpgradeCost;
         raceLevel ++;
-        racePrize += raceLevel * 25;
+        racePrize += raceLevel * 50;
         raceUpgradeCost = Math.floor(raceUpgradeCost * 2);
         updateStats();
     }
 }
 
 function upgradeComponent(component) {
-/*    var current = window[component.type + "Current"];*/
     if (window[component.type + "Current"] < component.name.length) {
         if (component.cost[window[component.type + "Current"]] <= cashFlow) {
             cashFlow -= component.cost[window[component.type + "Current"]];
